@@ -5,129 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Quản lý Sản phẩm</title>
   <style>
-    body {
-  font-family: "Segoe UI", Tahoma, sans-serif;
-  max-width: 950px;
-  margin: 40px auto;
-  padding: 0 24px;
-  background-color: #f5f7fb;
-}
-
-h1 {
-  color: #222;
-  text-align: center;
-}
-
-/* TABLE */
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 25px;
-  background: white;
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-th, td {
-  padding: 10px 14px;
-  text-align: left;
-}
-
-thead th {
-  background: linear-gradient(135deg, #5aa9e6, #3f7ecb);
-  color: white;
-  font-weight: 500;
-}
-
-#th-name {
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-#th-name:hover {
-  background-color: rgba(255,255,255,0.2);
-}
-
-tbody tr {
-  transition: 0.2s;
-}
-
-tbody tr:nth-child(even) {
-  background-color: #f7f9fc;
-}
-
-tbody tr:hover {
-  background-color: #e6f0ff;
-  transform: scale(1.01);
-}
-
-/* FORM */
-.form-section {
-  margin-top: 35px;
-  padding: 24px;
-  border-radius: 10px;
-  background: white;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-}
-
-.form-section h2 {
-  margin-top: 0;
-  color: #333;
-}
-
-.form-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 14px;
-  margin-bottom: 14px;
-}
-
-.form-row label {
-  display: flex;
-  flex-direction: column;
-  font-size: 13px;
-  color: #666;
-}
-
-.form-row input {
-  margin-top: 5px;
-  padding: 8px 10px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  font-size: 14px;
-  width: 190px;
-  transition: 0.2s;
-}
-
-.form-row input:focus {
-  border-color: #5aa9e6;
-  outline: none;
-  box-shadow: 0 0 0 2px rgba(90,169,230,0.2);
-}
-
-/* BUTTON */
-#btn-add {
-  padding: 10px 22px;
-  background: linear-gradient(135deg, #5aa9e6, #3f7ecb);
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 14px;
-  cursor: pointer;
-  transition: 0.25s;
-}
-
-#btn-add:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-}
-
-/* ERROR */
-.error {
-  color: #e74c3c;
-  font-size: 13px;
-  margin-top: 6px;
-}
+    body { font-family: Arial, sans-serif; max-width: 900px; margin: 20px auto; padding: 0 15px; }
+    table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+    th { background: #f0f0f0; }
+    #th-name { cursor: pointer; }
+    tr:hover { background: #f9f9f9; }
+    .form-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; background: #fafafa; }
+    .form-row { display: flex; gap: 10px; margin: 10px 0; flex-wrap: wrap; }
+    .form-row label { display: flex; flex-direction: column; gap: 3px; font-size: 13px; }
+    .form-row input { padding: 5px; border: 1px solid #ccc; width: 150px; }
+    #btn-add { padding: 6px 12px; background: #333; color: white; border: none; cursor: pointer; font-size: 13px; }
+    #btn-add:hover { background: #555; }
+    .error { color: red; font-size: 12px; margin: 5px 0; }
   </style>
 </head>
 <body>
@@ -186,11 +76,7 @@ tbody tr:hover {
       return price.toLocaleString('vi-VN') + ' đ';
     }
 
-    /**
-     * renderTable – xóa toàn bộ hàng hiện tại trong <tbody> của #product-table
-     * rồi render lại từ mảng `products`.
-     * Mỗi sản phẩm tạo một thẻ <tr> gồm 5 ô: STT, Tên, Danh mục, Đơn giá, Số lượng.
-     */
+    // xóa hàng cũ rồi render lại bảng từ mảng products
     function renderTable() {
       var tbody = document.querySelector('#product-table tbody');
       tbody.innerHTML = ''; // xóa hàng cũ
@@ -198,32 +84,30 @@ tbody tr:hover {
       products.forEach(function(p, index) {
         var tr = document.createElement('tr');
         tr.innerHTML =
-          '<td>' + (index + 1) + '</td>' +          // STT (tự tăng theo vị trí)
+          '<td>' + (index + 1) + '</td>' +          // stt
           '<td>' + p.name + '</td>' +
           '<td>' + p.category + '</td>' +
-          '<td>' + formatPrice(p.price) + '</td>' +  // hiển thị định dạng VNĐ
+          '<td>' + formatPrice(p.price) + '</td>' +  // format price
           '<td>' + p.quantity + '</td>';
         tbody.appendChild(tr);
       });
     }
 
-    // --- Nạp dữ liệu ban đầu qua AJAX ---
-    // Dùng XMLHttpRequest để đọc products.json (yêu cầu chạy qua local server)
+    // Gợi ý khung code
     var xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function() {
-      // readyState 4 = request hoàn thành; status 200 = phản hồi thành công
       if (xhr.readyState === 4 && xhr.status === 200) {
-        products = JSON.parse(xhr.responseText); // parse chuỗi JSON thành mảng
+        products = JSON.parse(xhr.responseText);
         renderTable();
       }
     };
     xhr.open('GET', 'products.json');
     xhr.send();
 
-    // --- Sắp xếp bảng khi click tiêu đề cột Tên sản phẩm ---
+    // Sắp xếp bảng khi click tiêu đề cột Tên sản phẩm
     var thName = document.getElementById('th-name');
     thName.addEventListener('click', function() {
-      // Toggle: null/false → tăng dần; true → giảm dần
+      // null/false -> tăng dần; true -> giảm dần
       if (sortAsc === null || sortAsc === false) {
         sortAsc = true;
       } else {
@@ -237,12 +121,12 @@ tbody tr:hover {
         return 0;
       });
 
-      // Cập nhật ký hiệu ▲/▼ trên tiêu đề cột
+      // Cập nhật ký hiệu tăng giảm
       thName.textContent = 'Tên sản phẩm ' + (sortAsc ? '▲' : '▼');
       renderTable();
     });
 
-    // --- Thêm sản phẩm mới từ form ---
+    // Thêm sản phẩm mới từ form
     document.getElementById('btn-add').addEventListener('click', function() {
       // Đọc và làm sạch giá trị từ các ô input
       var name     = document.getElementById('input-name').value.trim();
@@ -251,17 +135,17 @@ tbody tr:hover {
       var quantity = parseInt(document.getElementById('input-quantity').value, 10);
       var errorMsg = document.getElementById('error-msg');
 
-      // Validation: tên phải có ít nhất 3 ký tự
+      // kiểm tra tên phải có ít nhất 3 ký tự
       if (!name || name.length < 3) {
         errorMsg.textContent = 'Tên sản phẩm không được rỗng và phải có ít nhất 3 ký tự.';
         return;
       }
-      // Validation: đơn giá phải là số dương
+      // đơn giá phải là số dương
       if (isNaN(price) || price <= 0) {
         errorMsg.textContent = 'Đơn giá phải là số dương.';
         return;
       }
-      // Validation: số lượng phải là số nguyên ≥ 1
+      // số lượng phải là số nguyên ≥ 1
       if (isNaN(quantity) || quantity < 1 || !Number.isInteger(quantity)) {
         errorMsg.textContent = 'Số lượng phải là số nguyên lớn hơn hoặc bằng 1.';
         return;
@@ -269,22 +153,22 @@ tbody tr:hover {
 
       errorMsg.textContent = ''; // xóa thông báo lỗi cũ nếu hợp lệ
 
-      // Tạo đối tượng sản phẩm mới và thêm vào cuối mảng
+      // Tạo sản phẩm mới
       var newProduct = {
-        id: products.length + 1,        // id tạm thời theo độ dài mảng
+        id: products.length + 1,        
         name: name,
-        category: category || 'Khác',   // mặc định "Khác" nếu để trống
+        category: category || 'Khác',   
         price: price,
         quantity: quantity
       };
       products.push(newProduct);
 
-      // Reset trạng thái sắp xếp về mặc định rồi render lại bảng
+      // Reset rồi render lại bảng
       sortAsc = null;
       thName.textContent = 'Tên sản phẩm';
       renderTable();
 
-      // Xóa trắng toàn bộ ô input sau khi thêm thành công
+      // reset ô input
       document.getElementById('input-name').value = '';
       document.getElementById('input-category').value = '';
       document.getElementById('input-price').value = '';
